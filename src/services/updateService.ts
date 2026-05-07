@@ -10,11 +10,19 @@ const GITHUB_OWNER = 'healing1';
 const GITHUB_REPO  = 'anime-app';
 const RELEASE_API  = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases/latest`;
 
+// GitHub 镜像列表（国内 GFW 阻断 GitHub 时自动回退）
+// 空字符串 = 直连；其他为镜像前缀
+const GITHUB_MIRRORS = [
+  '',
+  'https://ghproxy.com/',
+  'https://ghfast.top/',
+];
+
 const LAST_CHECK_KEY = '@last_update_check';
 
 // 当前 App 版本（与 build.gradle 保持同步）
-const CURRENT_VERSION_CODE = 3;
-const CURRENT_VERSION_NAME = '1.0.2';
+const CURRENT_VERSION_CODE = 4;
+const CURRENT_VERSION_NAME = '1.0.3';
 
 interface ReleaseInfo {
   versionCode: number;
@@ -22,6 +30,53 @@ interface ReleaseInfo {
   downloadUrl: string;
   fileName: string;
   body: string;
+}
+
+/**
+ * 带镜像回退的 fetch。
+ * 直连优先 → 镜像1 → 镜像2 → 全部失败则抛异常
+ */
+async function fetchWithMirror(url: string, timeoutMs = 8000): Promise<{ response: Response; effectiveUrl: string }> {
+  let lastError: any;
+
+  for (const mirror of GITHUB_MIRRORS) {
+    const fullUrl = mirror ? `${mirror}${url}` : url;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const response = await fetch(fullUrl, {
+        headers: { Accept: 'application/vnd.github+json' },
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        console.log(`[Update] ✓ connected via ${mirror || 'direct'}`);
+        return { response, effectiveUrl: fullUrl };
+      }
+      // 404 也正常返回（release 不存在）
+      if (response.status === 404) {
+        return { response, effectiveUrl: fullUrl };
+      }
+    } catch (err: any) {
+      clearTimeout(timeoutId);
+      lastError = err;
+      console.log(`[Update] ✗ ${mirror || 'direct'} failed:`, err.message?.slice(0, 60));
+    }
+  }
+
+  throw lastError || new Error('All mirrors unreachable');
+}
+
+/** 给下载 URL 加镜像前缀（自动检测哪个镜像可用） */
+function mirrorDownloadUrl(downloadUrl: string, effectiveApiUrl: string): string {
+  for (const mirror of GITHUB_MIRRORS) {
+    if (mirror && effectiveApiUrl.startsWith(mirror)) {
+      return `${mirror}${downloadUrl}`;
+    }
+  }
+  return downloadUrl;
 }
 
 /**
@@ -78,12 +133,9 @@ export async function checkForUpdates(forceCheck = false): Promise<UpdateCheckRe
   await AsyncStorage.setItem(LAST_CHECK_KEY, String(Date.now()));
 
   try {
-    const response = await fetch(RELEASE_API, {
-      headers: { Accept: 'application/vnd.github+json' },
-    });
+    const { response, effectiveUrl } = await fetchWithMirror(RELEASE_API);
 
     if (!response.ok) {
-      // 404 表示还没有 release，忽略
       if (response.status === 404) return noUpdate;
       console.log('[Update] GitHub API error:', response.status);
       return noUpdate;
@@ -108,10 +160,12 @@ export async function checkForUpdates(forceCheck = false): Promise<UpdateCheckRe
     }
 
     const diff = remoteCode - CURRENT_VERSION_CODE;
+    // 下载链接也用同一个镜像
+    const downloadUrl = mirrorDownloadUrl(apkAsset.browser_download_url, effectiveUrl);
     const releaseInfo: ReleaseInfo = {
       versionCode: remoteCode,
       versionName: remoteName,
-      downloadUrl: apkAsset.browser_download_url,
+      downloadUrl,
       fileName: apkAsset.name,
       body: release.body || '',
     };
@@ -122,7 +176,7 @@ export async function checkForUpdates(forceCheck = false): Promise<UpdateCheckRe
       releaseInfo,
     };
   } catch (err: any) {
-    console.log('[Update] Check failed:', err.message);
+    console.log('[Update] All mirrors unreachable:', err.message?.slice(0, 80));
     return noUpdate;
   }
 }
