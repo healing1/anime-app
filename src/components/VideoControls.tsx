@@ -213,8 +213,18 @@ export default function VideoControls({
       if (d > 0 && isFinite(d) && isFinite(f) && p) {
         const target = f * d;
         if (isFinite(target) && target >= 0) {
-          safePlayer(() => { p.currentTime = target; });
-          setCurrentTime(target);
+          // #6: Verify player is still alive before seeking (read a property to test native handle)
+          let playerAlive = false;
+          try {
+            const testDuration = p.duration;
+            playerAlive = isFinite(testDuration) && testDuration > 0;
+          } catch {
+            playerAlive = false;
+          }
+          if (playerAlive) {
+            safePlayer(() => { p.currentTime = target; });
+            setCurrentTime(target);
+          }
         }
       }
       setSeekFraction(f);

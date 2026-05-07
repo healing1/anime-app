@@ -264,11 +264,10 @@ export default function PlayerScreen() {
   }, [isFullscreen, navigation, isTablet, isLandscape]);
 
   // #6: Null check before replace to prevent crash
+  // source change will be picked up by PlayerView's useEffect — no direct replace() needed
+  // (direct replace() causes double-replace, corrupting native player state)
   const handleSourceChange = useCallback((source: Source) => {
     setCurrentSource(source);
-    if (source.url && playerRef.current?.player) {
-      playerRef.current.replace(source.url);
-    }
   }, []);
   // #6: Wrap in try/catch to prevent crash on source resolution failure
   const handleEpisodeSelect = useCallback(async (ep: Episode) => {
@@ -279,7 +278,7 @@ export default function PlayerScreen() {
       setExternalSources(extSources);
       const newSource = extSources.length > 0 ? extSources[0] : ep.sources[0];
       setCurrentSource(newSource);
-      if (newSource?.url) playerRef.current?.replace(newSource.url);
+      // PlayerView's useEffect will pick up source change — no direct replace() to avoid double-replace
     } catch {
       // keep current source on failure
     }

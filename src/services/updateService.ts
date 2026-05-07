@@ -13,8 +13,8 @@ const RELEASE_API  = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO
 const LAST_CHECK_KEY = '@last_update_check';
 
 // 当前 App 版本（与 build.gradle 保持同步）
-const CURRENT_VERSION_CODE = 2;
-const CURRENT_VERSION_NAME = '1.0.1';
+const CURRENT_VERSION_CODE = 3;
+const CURRENT_VERSION_NAME = '1.0.2';
 
 interface ReleaseInfo {
   versionCode: number;
