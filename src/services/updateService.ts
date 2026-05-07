@@ -17,8 +17,8 @@ const LAST_CHECK_KEY = '@last_update_check';
 //   1. android/app/build.gradle (versionCode + versionName)
 //   2. AboutScreen.tsx (版本显示)
 //   3. MyScreen.tsx (3处版本显示)
-export const CURRENT_VERSION_CODE = 10;
-export const CURRENT_VERSION_NAME = '1.0.9';
+export const CURRENT_VERSION_CODE = 11;
+export const CURRENT_VERSION_NAME = '1.0.9.1';
 
 interface ReleaseInfo {
   versionCode: number;
@@ -169,7 +169,14 @@ export async function downloadAndInstall(
   info: ReleaseInfo,
   onProgress?: (percent: number) => void,
 ): Promise<void> {
-  const destPath = `${FileSystem.documentDirectory}${info.fileName}`;
+  // Android 14+ 需要安装未知应用权限
+  if (Platform.OS === 'android') {
+    const granted = await ensureInstallPermission();
+    if (!granted) return;
+  }
+
+  // 保存到 cache 目录（FileProvider 的 <cache-path> 覆盖此路径）
+  const destPath = `${FileSystem.cacheDirectory}${info.fileName}`;
 
   const downloadResumable = FileSystem.createDownloadResumable(
     info.downloadUrl,
@@ -190,6 +197,8 @@ export async function downloadAndInstall(
       return;
     }
 
+    console.log('[Update] Downloaded to:', result.uri);
+
     // Android: 调用 FileProvider 打开安装
     if (Platform.OS === 'android') {
       await openApkFile(result.uri);
@@ -203,23 +212,58 @@ export async function downloadAndInstall(
 }
 
 /**
+ * Android 8+ 需要"安装未知应用"权限。
+ * 引导用户去设置页开启——系统安装器也会自动提示，这里做双重保障。
+ */
+async function ensureInstallPermission(): Promise<boolean> {
+  // 直接打开应用设置页，让用户确认权限
+  try {
+    await IntentLauncher.startActivityAsync('android.settings.APPLICATION_DETAILS_SETTINGS', {
+      data: 'package:com.healing1213.animeapp',
+    });
+    Alert.alert(
+      '需要权限',
+      '请在应用详情中开启「允许安装未知应用」后返回重新下载更新。',
+      [{ text: '知道了' }],
+    );
+  } catch {
+    // 无法打开设置页时，仍然尝试安装（系统安装器可能会提示授权）
+  }
+  // 返回 true 继续流程——即使没授权，后续 intent 也可能触发系统授权提示
+  return true;
+}
+
+/**
  * Android: 用 Intent 打开 APK 文件，触发系统安装器
  * 依赖之前已配置的 FileProvider（在 AndroidManifest.xml 中）
  */
 async function openApkFile(fileUri: string): Promise<void> {
   try {
     const contentUri = await FileSystem.getContentUriAsync(fileUri);
-    await IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
+    console.log('[Update] Content URI:', contentUri);
+    await IntentLauncher.startActivityAsync('android.intent.action.INSTALL_PACKAGE', {
       data: contentUri,
-      flags: 1,
+      flags: 1, // FLAG_GRANT_READ_URI_PERMISSION
       type: 'application/vnd.android.package-archive',
     });
-  } catch {
-    // 回退：尝试直接打开 URI
+  } catch (e1: any) {
+    console.log('[Update] INSTALL_PACKAGE intent failed:', e1.message?.slice(0, 80));
+    // 回退 1: ACTION_VIEW（兼容旧版本 Android）
     try {
-      await Linking.openURL(fileUri);
-    } catch {
-      Alert.alert('提示', '下载完成！请在文件管理器中找到 APK 并手动安装。');
+      const contentUri = await FileSystem.getContentUriAsync(fileUri);
+      await IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
+        data: contentUri,
+        flags: 1,
+        type: 'application/vnd.android.package-archive',
+      });
+    } catch (e2: any) {
+      console.log('[Update] VIEW intent failed:', e2.message?.slice(0, 80));
+      // 回退 2: 直接打开 file:// URI
+      try {
+        await Linking.openURL(fileUri);
+      } catch {
+        Alert.alert('提示', '下载完成！请在文件管理器中找到 APK 并手动安装。');
+      }
     }
   }
 }
