@@ -35,6 +35,9 @@ const RATES = [1, 1.5, 2];
 export default function VideoControls({
   player, playerWidth, playerHeight, isFullscreen, onFullscreenToggle, onBack, onSourceSwitch, safeTop = 0,
 }: VideoControlsProps) {
+  const playerRef = useRef(player);
+  playerRef.current = player; // always point to latest player, prevents stale closure crash
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -206,10 +209,11 @@ export default function VideoControls({
       if (!isSeeking.current) return;
       const f = progressFromEvent(evt);
       const d = durationRef.current;
-      if (d > 0 && isFinite(d) && isFinite(f)) {
+      const p = playerRef.current; // always read latest player ref
+      if (d > 0 && isFinite(d) && isFinite(f) && p) {
         const target = f * d;
         if (isFinite(target) && target >= 0) {
-          safePlayer(() => { player.currentTime = target; });
+          safePlayer(() => { p.currentTime = target; });
           setCurrentTime(target);
         }
       }
