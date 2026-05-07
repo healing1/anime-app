@@ -152,12 +152,21 @@ export const api = {
   getTrending: () => getMockTrending(12),
   getFollowing: async (ids: string[]) => {
     if (ids.length === 0) return [];
+    const source = await getActiveSource();
     const results = await Promise.all(ids.map(async (id) => {
       try {
-        const source = await getActiveSource();
+        // If active source exists, use it exclusively — don't fall through to
+        // Jikan/mock because they use incompatible ID formats (TVBox IDs vs MAL IDs)
         if (source) {
-          try { const detail = await source.fetchDetail(id); if (detail) return detail; } catch { /* fall through */ }
+          try {
+            const detail = await source.fetchDetail(id);
+            if (detail) return detail;
+          } catch { /* source fetch failed for this ID */ }
+          // Source exists but can't resolve this ID — return null rather
+          // than trying incompatible APIs that would also fail
+          return null;
         }
+        // No active source — try Jikan real API or mock as fallback
         if (USE_REAL_API) {
           try { const detail = await fetchAnimeById(id); if (detail) return detail; } catch { /* fallback */ }
         }

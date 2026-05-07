@@ -189,47 +189,64 @@ export default function VideoControls({
     return Math.max(0, Math.min(1, x / (barWidth.current || 1)));
   };
 
+  // Track component mount state so we never seek on an unmounted player
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
+
   const barPan = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: () => true,
     onPanResponderGrant: (evt) => {
-      if (durationRef.current <= 0 || !isFinite(durationRef.current)) return;
-      isSeeking.current = true;
-      const f = progressFromEvent(evt);
-      setSeekFraction(f);
-      setCurrentTime(f * durationRef.current);
+      try {
+        if (!mountedRef.current) return;
+        if (durationRef.current <= 0 || !isFinite(durationRef.current)) return;
+        isSeeking.current = true;
+        const f = progressFromEvent(evt);
+        setSeekFraction(f);
+        setCurrentTime(f * durationRef.current);
+      } catch { /* silently ignore — component may be unmounting */ }
     },
     onPanResponderMove: (evt) => {
-      if (!isSeeking.current) return;
-      const f = progressFromEvent(evt);
-      setSeekFraction(f);
-      setCurrentTime(f * durationRef.current);
+      try {
+        if (!isSeeking.current || !mountedRef.current) return;
+        const f = progressFromEvent(evt);
+        setSeekFraction(f);
+        setCurrentTime(f * durationRef.current);
+      } catch { /* ignore */ }
     },
     onPanResponderRelease: (evt) => {
-      if (!isSeeking.current) return;
-      const f = progressFromEvent(evt);
-      const d = durationRef.current;
-      const p = playerRef.current; // always read latest player ref
-      if (d > 0 && isFinite(d) && isFinite(f) && p) {
-        const target = f * d;
-        if (isFinite(target) && target >= 0) {
-          // #6: Verify player is still alive before seeking (read a property to test native handle)
-          let playerAlive = false;
-          try {
-            const testDuration = p.duration;
-            playerAlive = isFinite(testDuration) && testDuration > 0;
-          } catch {
-            playerAlive = false;
-          }
-          if (playerAlive) {
-            safePlayer(() => { p.currentTime = target; });
-            setCurrentTime(target);
+      try {
+        if (!isSeeking.current || !mountedRef.current) return;
+        const f = progressFromEvent(evt);
+        const d = durationRef.current;
+        const p = playerRef.current;
+        if (d > 0 && isFinite(d) && isFinite(f) && p) {
+          const target = f * d;
+          if (isFinite(target) && target >= 0) {
+            // Verify player is still alive before seeking (read a property to test native handle)
+            let playerAlive = false;
+            try {
+              const testDuration = p.duration;
+              playerAlive = isFinite(testDuration) && testDuration > 0;
+            } catch {
+              playerAlive = false;
+            }
+            if (playerAlive && mountedRef.current) {
+              safePlayer(() => { p.currentTime = target; });
+              setCurrentTime(target);
+            }
           }
         }
+        setSeekFraction(f);
+        isSeeking.current = false;
+        show();
+      } catch {
+        // PanResponder fired after unmount — silently ignore
+        isSeeking.current = false;
       }
-      setSeekFraction(f);
-      isSeeking.current = false;
-      show();
     },
   })).current;
 

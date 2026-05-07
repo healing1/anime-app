@@ -25,8 +25,8 @@ const LAST_CHECK_KEY = '@last_update_check';
 //   1. android/app/build.gradle (versionCode + versionName)
 //   2. AboutScreen.tsx (版本显示)
 //   3. MyScreen.tsx (3处版本显示)
-export const CURRENT_VERSION_CODE = 8;
-export const CURRENT_VERSION_NAME = '1.0.7';
+export const CURRENT_VERSION_CODE = 9;
+export const CURRENT_VERSION_NAME = '1.0.8';
 
 interface ReleaseInfo {
   versionCode: number;
