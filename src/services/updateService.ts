@@ -11,11 +11,11 @@ const GITHUB_REPO  = 'anime-app';
 const RELEASE_API  = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases/latest`;
 
 // GitHub 镜像列表（国内 GFW 阻断 GitHub 时自动回退）
-// 空字符串 = 直连；其他为镜像前缀
+// 空字符串 = 直连；其他为镜像前缀（注意 gh-proxy 有连字符，ghproxy 已失效）
 const GITHUB_MIRRORS = [
   '',
-  'https://ghproxy.com/',
-  'https://ghfast.top/',
+  'https://gh-proxy.com/',
+  'https://ghproxy.net/',
 ];
 
 const LAST_CHECK_KEY = '@last_update_check';
@@ -25,8 +25,8 @@ const LAST_CHECK_KEY = '@last_update_check';
 //   1. android/app/build.gradle (versionCode + versionName)
 //   2. AboutScreen.tsx (版本显示)
 //   3. MyScreen.tsx (3处版本显示)
-export const CURRENT_VERSION_CODE = 7;
-export const CURRENT_VERSION_NAME = '1.0.6';
+export const CURRENT_VERSION_CODE = 8;
+export const CURRENT_VERSION_NAME = '1.0.7';
 
 interface ReleaseInfo {
   versionCode: number;
