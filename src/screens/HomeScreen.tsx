@@ -63,7 +63,11 @@ export default function HomeScreen() {
       setRecent(api.getRecentUpdates());
       setBannerData(api.getTrending().filter((a: Anime) => a.rating >= 8.7).slice(0, 6));
     }
-    setFollowed(api.getFollowing(following));
+    try {
+      setFollowed(await api.getFollowing(following));
+    } catch {
+      setFollowed([]); // silent fail, show empty
+    }
   }, [following, isTablet]);
 
   useFocusEffect(useCallback(() => {

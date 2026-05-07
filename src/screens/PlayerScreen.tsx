@@ -424,6 +424,7 @@ export default function PlayerScreen() {
     <View style={[styles.playerContainer, { width: playerW, height: playerH }]}>
       {currentSource.url ? (
         <PlayerView
+          key={currentSource.url} // force remount on source change: prevents stale native player crash
           ref={playerRef}
           source={currentSource.url}
           playerWidth={playerW}

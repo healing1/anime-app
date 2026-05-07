@@ -150,7 +150,22 @@ export const api = {
 
   getRecentUpdates: () => getMockRecentUpdates(10),
   getTrending: () => getMockTrending(12),
-  getFollowing: (ids: string[]) => getMockFollowing(ids),
+  getFollowing: async (ids: string[]) => {
+    if (ids.length === 0) return [];
+    const results = await Promise.all(ids.map(async (id) => {
+      try {
+        const source = await getActiveSource();
+        if (source) {
+          try { const detail = await source.fetchDetail(id); if (detail) return detail; } catch { /* fall through */ }
+        }
+        if (USE_REAL_API) {
+          try { const detail = await fetchAnimeById(id); if (detail) return detail; } catch { /* fallback */ }
+        }
+        return getMockAnimeById(id) || null;
+      } catch { return null; }
+    }));
+    return results.filter(Boolean) as Anime[];
+  },
   getRecommendations: (currentId: string, count = 10) => getMockRecommendations(currentId, count),
 
   testConnection: async () => {

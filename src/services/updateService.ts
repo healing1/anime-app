@@ -21,8 +21,12 @@ const GITHUB_MIRRORS = [
 const LAST_CHECK_KEY = '@last_update_check';
 
 // 当前 App 版本（与 build.gradle 保持同步）
-const CURRENT_VERSION_CODE = 6;
-const CURRENT_VERSION_NAME = '1.0.5';
+// 修改版本号时，同步更新：
+//   1. android/app/build.gradle (versionCode + versionName)
+//   2. AboutScreen.tsx (版本显示)
+//   3. MyScreen.tsx (3处版本显示)
+export const CURRENT_VERSION_CODE = 7;
+export const CURRENT_VERSION_NAME = '1.0.6';
 
 interface ReleaseInfo {
   versionCode: number;

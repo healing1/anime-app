@@ -9,7 +9,7 @@ import CacheManager from '../components/CacheManager';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system/legacy';
-import { checkForUpdates, showUpdateDialog, downloadAndInstall, type UpdateCheckResult } from '../services/updateService';
+import { checkForUpdates, showUpdateDialog, downloadAndInstall, CURRENT_VERSION_NAME, type UpdateCheckResult } from '../services/updateService';
 
 export default function MyScreen() {
   const { colors } = useTheme();
@@ -56,7 +56,7 @@ export default function MyScreen() {
           handleStartDownload(result);
         });
       } else {
-        Alert.alert('已是最新版本', '当前版本 v1.0.1 已经是最新。');
+        Alert.alert('已是最新版本', `当前版本 v${CURRENT_VERSION_NAME} 已经是最新。`);
       }
     } catch {
       Alert.alert('检查失败', '无法连接更新服务器，请稍后重试。');
@@ -137,7 +137,7 @@ export default function MyScreen() {
     {
       icon: 'cloud-download-outline' as const,
       label: '检查更新',
-      desc: downloading ? `正在下载... ${downloadProgress}%` : checking ? '正在检查...' : 'v1.0.1 · 点击检查新版本',
+      desc: downloading ? `正在下载... ${downloadProgress}%` : checking ? '正在检查...' : `v${CURRENT_VERSION_NAME} · 点击检查新版本`,
       color: '#8B5CF6',
       onPress: () => { if (!checking && !downloading) handleCheckUpdate(); },
       disabled: checking || downloading,
@@ -145,7 +145,7 @@ export default function MyScreen() {
     {
       icon: 'information-circle-outline' as const,
       label: '关于',
-      desc: 'animer v1.0.1 · 多源动漫播放器',
+      desc: `animer v${CURRENT_VERSION_NAME} · 多源动漫播放器`,
       color: '#10B981',
       onPress: () => navigation.navigate('About'),
     },

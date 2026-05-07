@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Animated, Linking
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../contexts/ThemeContext';
+import { CURRENT_VERSION_NAME } from '../services/updateService';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function AboutScreen() {
@@ -41,7 +42,7 @@ export default function AboutScreen() {
               <Ionicons name="play-circle" size={48} color="#FFF" />
             </View>
             <Text style={[styles.appName, { color: colors.text }]}>animer</Text>
-            <Text style={[styles.version, { color: colors.textTertiary }]}>v1.0.1</Text>
+            <Text style={[styles.version, { color: colors.textTertiary }]}>v{CURRENT_VERSION_NAME}</Text>
             <Text style={[styles.tagline, { color: colors.textSecondary }]}>多源动漫播放器 · 追番必备</Text>
           </View>
 
