@@ -21,8 +21,8 @@ const GITHUB_MIRRORS = [
 const LAST_CHECK_KEY = '@last_update_check';
 
 // 当前 App 版本（与 build.gradle 保持同步）
-const CURRENT_VERSION_CODE = 5;
-const CURRENT_VERSION_NAME = '1.0.4';
+const CURRENT_VERSION_CODE = 6;
+const CURRENT_VERSION_NAME = '1.0.5';
 
 interface ReleaseInfo {
   versionCode: number;
@@ -164,7 +164,9 @@ export async function checkForUpdates(forceCheck = false): Promise<UpdateCheckRe
       // Release 没有附件时，回退到 repo 里的 APK 文件
       // （uploads.github.com 被 GFW 阻断时，APK 直接推送到仓库根目录）
       fileName = `animer-v${remoteName}-arm64.apk`;
-      downloadUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/master/${fileName}`;
+      const rawUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/master/${fileName}`;
+      // 下载链接也走同一个镜像
+      downloadUrl = mirrorDownloadUrl(rawUrl, effectiveUrl);
       console.log('[Update] No release asset, using repo file:', fileName);
     }
 
