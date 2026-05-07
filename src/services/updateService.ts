@@ -21,8 +21,8 @@ const GITHUB_MIRRORS = [
 const LAST_CHECK_KEY = '@last_update_check';
 
 // 当前 App 版本（与 build.gradle 保持同步）
-const CURRENT_VERSION_CODE = 4;
-const CURRENT_VERSION_NAME = '1.0.3';
+const CURRENT_VERSION_CODE = 5;
+const CURRENT_VERSION_NAME = '1.0.4';
 
 interface ReleaseInfo {
   versionCode: number;
@@ -149,24 +149,31 @@ export async function checkForUpdates(forceCheck = false): Promise<UpdateCheckRe
 
     if (remoteCode <= CURRENT_VERSION_CODE) return noUpdate;
 
-    // 找 APK asset
+    // 找 APK asset（发布时挂的附件）
     const apkAsset = release.assets?.find(
       (a: any) => a.name?.endsWith('.apk') && a.browser_download_url,
     );
 
-    if (!apkAsset) {
-      console.log('[Update] No APK asset found in release');
-      return noUpdate;
+    let downloadUrl: string;
+    let fileName: string;
+
+    if (apkAsset) {
+      downloadUrl = mirrorDownloadUrl(apkAsset.browser_download_url, effectiveUrl);
+      fileName = apkAsset.name;
+    } else {
+      // Release 没有附件时，回退到 repo 里的 APK 文件
+      // （uploads.github.com 被 GFW 阻断时，APK 直接推送到仓库根目录）
+      fileName = `animer-v${remoteName}-arm64.apk`;
+      downloadUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/master/${fileName}`;
+      console.log('[Update] No release asset, using repo file:', fileName);
     }
 
     const diff = remoteCode - CURRENT_VERSION_CODE;
-    // 下载链接也用同一个镜像
-    const downloadUrl = mirrorDownloadUrl(apkAsset.browser_download_url, effectiveUrl);
     const releaseInfo: ReleaseInfo = {
       versionCode: remoteCode,
       versionName: remoteName,
       downloadUrl,
-      fileName: apkAsset.name,
+      fileName,
       body: release.body || '',
     };
 
