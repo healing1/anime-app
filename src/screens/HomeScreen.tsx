@@ -119,7 +119,7 @@ export default function HomeScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { backgroundColor: colors.headerBg, borderBottomColor: colors.border, paddingTop: insets.top + 8 }]}>
         <View style={{ flex: 1 }}>
-          <Text style={[styles.headerTitle, { color: colors.text, fontSize: headerFontSize }]}>animer</Text>
+          <Text style={[styles.headerTitle, { color: colors.text, fontSize: headerFontSize }]}>Animer</Text>
           <TouchableOpacity onPress={() => navigation.navigate('SourceManage')} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
             <View style={[styles.sourceDot, { backgroundColor: activeSource && activeSource.id !== 'builtin-default' ? colors.success : colors.warning }]} />
             <Text style={[styles.sourceTag, { color: activeSource && activeSource.id !== 'builtin-default' ? colors.primary : colors.textTertiary }]} numberOfLines={1}>

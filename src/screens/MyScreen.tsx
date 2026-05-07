@@ -145,7 +145,7 @@ export default function MyScreen() {
     {
       icon: 'information-circle-outline' as const,
       label: '关于',
-      desc: `animer v${CURRENT_VERSION_NAME} · 多源动漫播放器`,
+      desc: `Animer v${CURRENT_VERSION_NAME} · 多源动漫播放器`,
       color: '#10B981',
       onPress: () => navigation.navigate('About'),
     },

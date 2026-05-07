@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/ThemeContext';
+import AnimatedTabBar from '../components/AnimatedTabBar';
 import HomeScreen from '../screens/HomeScreen';
 import CategoriesScreen from '../screens/CategoriesScreen';
 import MyScreen from '../screens/MyScreen';
@@ -17,29 +18,25 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 function TabNavigator() {
-  const { colors } = useTheme();
-
   return (
     <Tab.Navigator
+      tabBar={(props) => <AnimatedTabBar {...props} />}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textTertiary,
         tabBarStyle: {
-          backgroundColor: colors.tabBar,
-          borderTopColor: colors.tabBarBorder,
-          paddingTop: 4,
-          height: 56,
-        },
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '600', marginTop: 2 },
+          position: 'absolute',
+          backgroundColor: 'transparent',
+          borderTopWidth: 0,
+          elevation: 0,
+        } as any,
       }}
     >
       <Tab.Screen name="Home" component={HomeScreen}
-        options={{ title: 'animer', tabBarLabel: '首页', tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} /> }} />
+        options={{ title: 'Animer', tabBarLabel: '首页', tabBarIcon: ({ color, size }: { color: string; size: number }) => <Ionicons name="home" size={size} color={color} /> }} />
       <Tab.Screen name="Categories" component={CategoriesScreen}
-        options={{ title: '分类探索', tabBarLabel: '分类', tabBarIcon: ({ color, size }) => <Ionicons name="grid" size={size} color={color} /> }} />
+        options={{ title: '分类探索', tabBarLabel: '分类', tabBarIcon: ({ color, size }: { color: string; size: number }) => <Ionicons name="grid" size={size} color={color} /> }} />
       <Tab.Screen name="My" component={MyScreen}
-        options={{ title: '我的', tabBarLabel: '我的', tabBarIcon: ({ color, size }) => <Ionicons name="person" size={size} color={color} /> }} />
+        options={{ title: '我的', tabBarLabel: '我的', tabBarIcon: ({ color, size }: { color: string; size: number }) => <Ionicons name="person" size={size} color={color} /> }} />
     </Tab.Navigator>
   );
 }

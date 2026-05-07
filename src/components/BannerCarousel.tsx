@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { View, Text, Image, TouchableOpacity, Pressable, FlatList, StyleSheet } from 'react-native';
+import { View, Text, Image, FlatList, StyleSheet } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useResponsive } from '../hooks/useResponsive';
 import type { Anime } from '../types';
@@ -16,6 +16,8 @@ export default function BannerCarousel({ data, onPress }: Props) {
   const currentIndex = useRef(0);
   const isManualScrolling = useRef(false);
   const [displayIndex, setDisplayIndex] = useState(0);
+  const touchStartX = useRef(0);
+  const touchMoved = useRef(false);
 
   useEffect(() => {
     if (data.length <= 1) return;
@@ -60,10 +62,20 @@ export default function BannerCarousel({ data, onPress }: Props) {
           index,
         })}
         renderItem={({ item }) => (
-          <Pressable
-            onPress={() => onPress(item)}
-            delayLongPress={200}
+          <View
             style={{ width: SCREEN_WIDTH, height: BANNER_HEIGHT }}
+            onTouchStart={(e) => {
+              touchStartX.current = e.nativeEvent.pageX;
+              touchMoved.current = false;
+            }}
+            onTouchMove={() => {
+              touchMoved.current = true;
+            }}
+            onTouchEnd={(e) => {
+              if (!touchMoved.current && Math.abs(e.nativeEvent.pageX - touchStartX.current) < 10) {
+                onPress(item);
+              }
+            }}
           >
             <Image
               source={{ uri: item.banner || item.cover }}
@@ -86,7 +98,7 @@ export default function BannerCarousel({ data, onPress }: Props) {
                 {item.genres.join(' · ')} · {item.year}
               </Text>
             </View>
-          </Pressable>
+          </View>
         )}
       />
 

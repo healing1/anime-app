@@ -41,7 +41,7 @@ export default function AboutScreen() {
             <View style={[styles.logoCircle, { backgroundColor: colors.primary }]}>
               <Ionicons name="play-circle" size={48} color="#FFF" />
             </View>
-            <Text style={[styles.appName, { color: colors.text }]}>animer</Text>
+            <Text style={[styles.appName, { color: colors.text }]}>Animer</Text>
             <Text style={[styles.version, { color: colors.textTertiary }]}>v{CURRENT_VERSION_NAME}</Text>
             <Text style={[styles.tagline, { color: colors.textSecondary }]}>多源动漫播放器 · 追番必备</Text>
           </View>
@@ -98,7 +98,7 @@ export default function AboutScreen() {
           </View>
 
           <Text style={[styles.copyright, { color: colors.textTertiary }]}>
-            © 2026 animer. All rights reserved.
+            © 2026 Animer. All rights reserved.
           </Text>
         </ScrollView>
       </Animated.View>

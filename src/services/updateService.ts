@@ -17,8 +17,8 @@ const LAST_CHECK_KEY = '@last_update_check';
 //   1. android/app/build.gradle (versionCode + versionName)
 //   2. AboutScreen.tsx (版本显示)
 //   3. MyScreen.tsx (3处版本显示)
-export const CURRENT_VERSION_CODE = 9;
-export const CURRENT_VERSION_NAME = '1.0.8';
+export const CURRENT_VERSION_CODE = 10;
+export const CURRENT_VERSION_NAME = '1.0.9';
 
 interface ReleaseInfo {
   versionCode: number;
@@ -129,7 +129,7 @@ export async function checkForUpdates(forceCheck = false): Promise<UpdateCheckRe
 
     return {
       hasUpdate: true,
-      forceUpdate: diff >= 2,
+      forceUpdate: false,
       releaseInfo,
     };
   } catch (err: any) {
