@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "animer",
+    "slug": "anime-app",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.healing1213.animeapp",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "owner": "healing1213",
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-video",
+      "expo-screen-orientation"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "cc4c3c96-373c-4e35-98cd-9e51d0ef1d14"
+      }
+    }
+  }
+}
