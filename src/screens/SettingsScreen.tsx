@@ -33,7 +33,7 @@ export default function SettingsScreen() {
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}>
         {/* Playback settings */}
         <Text style={[styles.sectionTitle, { color: colors.text }]}>播放设置</Text>
         <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>

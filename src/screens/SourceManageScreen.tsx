@@ -96,7 +96,7 @@ export default function SourceManageScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}>
         {/* Import section */}
         <Text style={[styles.sectionTitle, { color: colors.text }]}>导入源</Text>
         <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>

@@ -194,7 +194,7 @@ export default function CategoriesScreen() {
           <FlatList
             key={`grid-${gridColumns}`}
             data={data} keyExtractor={item => item.id} numColumns={gridColumns} showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: gridPadding, paddingBottom: 20 }}
+            contentContainerStyle={{ paddingHorizontal: gridPadding, paddingBottom: insets.bottom + 100 }}
             columnWrapperStyle={gridColumns > 1 ? { gap: gridGap, marginBottom: 0 } : undefined}
             renderItem={({ item }) => <AnimeCard anime={item} size="grid" showEpisode onPress={() => handlePress(item)} />}
             ListFooterComponent={renderFooter}

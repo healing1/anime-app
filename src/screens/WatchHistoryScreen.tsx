@@ -44,7 +44,7 @@ export default function WatchHistoryScreen() {
           data={watchHistory}
           keyExtractor={(item, i) => `${item.animeId}-${item.episodeId}-${i}`}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: insets.bottom + 100 }}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={[styles.item, { backgroundColor: colors.card, borderColor: colors.border }]}

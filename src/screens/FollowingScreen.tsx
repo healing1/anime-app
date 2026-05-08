@@ -62,7 +62,7 @@ export default function FollowingScreen() {
           keyExtractor={item => item.id}
           numColumns={2}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: insets.bottom + 100 }}
           columnWrapperStyle={{ gap: 12, marginBottom: 14 }}
           renderItem={({ item }) => (
             <AnimeCard anime={item} size="grid" onPress={() => navigation.navigate('Player', { animeId: item.id })} />

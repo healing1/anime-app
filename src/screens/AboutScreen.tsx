@@ -35,7 +35,7 @@ export default function AboutScreen() {
       </View>
 
       <Animated.View style={{ flex: 1, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 100 }]}>
           {/* Logo area */}
           <View style={styles.logoSection}>
             <View style={[styles.logoCircle, { backgroundColor: colors.primary }]}>
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontSize: 18, fontWeight: '700' },
   backBtn: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
-  scrollContent: { paddingBottom: 40 },
+  scrollContent: { },
   logoSection: { alignItems: 'center', paddingVertical: 36 },
   logoCircle: { width: 88, height: 88, borderRadius: 44, justifyContent: 'center', alignItems: 'center', marginBottom: 16, elevation: 8, shadowColor: '#6366F1', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },
   appName: { fontSize: 28, fontWeight: '800', letterSpacing: -0.5 },

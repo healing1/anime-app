@@ -554,7 +554,7 @@ export default function PlayerScreen() {
       {/* Tablet split: right-side content panel (absolute overlay) */}
       {showSplitLayout && (
         <View style={[styles.splitPanel, { backgroundColor: colors.background }]}>
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}>
             {renderContent(true)}
           </ScrollView>
         </View>

@@ -161,7 +161,7 @@ export default function MyScreen() {
       </View>
 
       <Animated.View style={{ flex: 1, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}>
           {/* User card */}
           <Animated.View style={[styles.userCard, { backgroundColor: colors.card, borderColor: colors.border }, { transform: [{ scale: cardScale }] }]}>
             <TouchableOpacity onPress={handlePickAvatar} activeOpacity={0.7}>

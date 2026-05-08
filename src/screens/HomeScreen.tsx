@@ -173,7 +173,7 @@ export default function HomeScreen() {
             <FlatList
               key={`search-${gridColumns}`}
               data={searchResults} keyExtractor={item => item.id} numColumns={gridColumns} showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: gridPadding, paddingBottom: 20 }}
+              contentContainerStyle={{ paddingHorizontal: gridPadding, paddingBottom: insets.bottom + 100 }}
               columnWrapperStyle={gridColumns > 1 ? { gap: gridGap, marginBottom: 14 } : undefined}
               renderItem={({ item }) => <AnimeCard anime={item} size="grid" showEpisode onPress={() => { clearSearch(); handlePress(item); }} />}
               removeClippedSubviews windowSize={7} maxToRenderPerBatch={8} initialNumToRender={6}
@@ -211,7 +211,7 @@ export default function HomeScreen() {
                 </View>
               </View>
             )}
-            contentContainerStyle={{ paddingBottom: 12 }}
+            contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
           />
         </Animated.View>
       )}
